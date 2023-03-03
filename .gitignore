@@ -93,4 +93,7 @@ ENV/
 # Training results
 models/*
 
+# Custom data
+data/examples/custom/*
+
 #*
