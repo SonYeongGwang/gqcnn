@@ -31,7 +31,7 @@ RUN curl -L http://download.osgeo.org/libspatialindex/spatialindex-src-1.8.5.tar
     cd ..
 
 # Install pip (`apt-get install python-pip` causes trouble w/ networkx).
-RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+RUN curl -O https://bootstrap.pypa.io/pip/3.5/get-pip.py && \
 	python3 get-pip.py && \
 	rm get-pip.py
 
