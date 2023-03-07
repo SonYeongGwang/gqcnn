@@ -98,6 +98,7 @@ class IntelCamera:
 
     def generate(self, depth, downsample=True):
         depth_o3d = o3d.geometry.Image(depth)
+        print(depth_o3d)
         if self.device_product_line == 'L500':
             self.pcd = o3d.geometry.PointCloud.create_from_depth_image(depth_o3d, self.intrinsic_o3d, depth_scale=4000.0)
         else:
@@ -209,7 +210,7 @@ class IntelCamera:
             self.contents = 0
 
             home_path = os.path.expanduser('~')
-            cfg_path = home_path+'/catkin_ws/src/suction_net_ros/config/workspace.yml'
+            cfg_path = 'cfg/workspace.yml'
 
             with open(cfg_path) as f:   
                 self.workspace_cfg = yaml.load(f, Loader=yaml.FullLoader)

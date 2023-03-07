@@ -264,4 +264,10 @@ if __name__ == "__main__":
         vis.grasp(action.grasp, scale=2.5, show_center=False, show_axis=True)
         vis.title("Planned grasp at depth {0:.3f}m with Q={1:.3f}".format(
             action.grasp.depth, action.q_value))
+        
+        print("action.grasp.center[0]: ",  action.grasp.center[0])
+        print("action.grasp.center[1]: ",  action.grasp.center[1])
+        print("action.grasp.angle: ",  action.grasp.angle)
+        print("action.grasp.depth: ",  action.grasp.depth)
+
         vis.show()
