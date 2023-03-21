@@ -59,6 +59,73 @@ import cv2
 from camera import IntelCamera
 import copy
 
+def collision_avoidance(point, normal, cam_instance):
+
+    cam2marker = cam_instance.stored_cam2marker
+    marker2cam = np.linalg.inv(cam2marker)
+    point = np.array([*point, 1]).T
+
+
+    ## suction point defined from the marker frame
+    point_marker = np.dot(marker2cam, point)
+    print("point_marker:", point_marker)
+    ## all the part of the bin is defined from the marker frame
+    ## ex) upper means the bin part on the -y area of the marker frame
+    ## ex) left means the bin part on the +x area of the marker frame
+
+    ## suction normal defined from the camera frame
+
+    ## point on the upper 
+    if point_marker[1] < -cam_instance.origin_to_corner_y + 0.05:
+        print("--------------upper part--------------")
+        theta = np.math.atan2(normal[0], 0)
+        print("normal:", normal)
+        print('theta:', theta)
+        if np.abs(theta) < np.math.pi/2:
+            print("REFINING NORMAL...")
+            normal = np.array([0, 0, -1])
+
+    ## point on the bottom 
+    elif point_marker[1] > cam_instance.H-cam_instance.origin_to_corner_y - 0.05:
+        print("--------------bottom part--------------")
+        theta = np.math.atan2(normal[0], 0)
+        print("normal:", normal)
+        print('theta:', theta)
+        if np.abs(theta) < np.math.pi/2:
+            print("REFINING NORMAL...")
+            normal = np.array([0, 0, -1])
+
+    ## point on the left
+    elif point_marker[0] > cam_instance.W-cam_instance.origin_to_corner_x - 0.05:
+        print("--------------left part--------------")
+        theta = np.math.atan2(normal[1], 1)
+        print("normal:", normal)
+        print('theta:', theta)
+        if np.abs(theta) < np.math.pi/2:
+            print("REFINING NORMAL...")
+            normal = np.array([0, 0, -1])
+
+    ## point on the right
+    elif point_marker[0] < -cam_instance.origin_to_corner_x + 0.05:
+        print("--------------right part--------------")
+        theta = np.math.atan2(normal[1], 1)
+        print("normal:", normal)
+        print('theta:', theta)
+        if np.abs(theta) < np.math.pi/2:
+            print("REFINING NORMAL...")
+            normal = np.array([0, 0, -1])
+
+    ## prevent grasping the bin floor
+    if  point[2] > 0.92:
+        print("DETECTION ON THE FLOOR!!!!!!!!!")
+        point[2] = 0.85
+
+        normal = np.array([0, 0, -1])
+
+    point = point[:3]
+
+
+    return point, normal
 
 def get_suction_point_3d(depth_image: np, suction_point: np, cam_instance):
     global pcd
@@ -255,6 +322,8 @@ print("suction_point_2d:", suction_point_2d)
 
 point, normal = get_suction_point_3d(org_depth, suction_point_2d, cam)
 print("suction point:", point)
+
+point, normal = collision_avoidance(point, normal, cam)
 
 msg = str(point[0])+','+str(point[1])+','+str(point[2])+','+str(normal[0])+','+str(normal[1])+','+str(normal[2])
 DATASock.send(msg.encode())
